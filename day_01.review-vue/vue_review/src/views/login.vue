@@ -27,15 +27,20 @@ export default {
     };
   },
   methods: {
+    // 引入vuex中的方法
     ...mapMutations({
       vuexLogin: "login"
     }),
     login() {
+      // 发起ajax请求
       this.$http.post("/access_token").then(res => {
-        console.log(res);
+        // 判断一下状态
         if (res.data.ok !== 0) {
+          // 添加令牌
           sessionStorage.setItem("token", res.data.data.token);
+          // 绑定数据
           this.vuexLogin({username:this.username})
+          // 跳转到index
           this.$router.push("/");
         }
       });

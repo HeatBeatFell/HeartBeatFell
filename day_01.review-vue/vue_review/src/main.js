@@ -5,7 +5,9 @@ import store from "./store";
 import axios from "axios";
 // 拦截数据
 import './mock'
+// 为了方便我们给axios添加一个基础地质
 axios.defaults.baseURL = 'http://127.0.0.1:8080/api/v1';
+//把axios添加到vue的有原型方法上   （vue规定了必须以$开头）
 Vue.prototype.$http = axios
 
 // 前置拦截器
