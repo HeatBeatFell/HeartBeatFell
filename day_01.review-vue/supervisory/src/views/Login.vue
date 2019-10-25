@@ -1,6 +1,11 @@
 <template>
   <el-card class="box-card" shadow="always">
-    <el-form :model="loginForm" :rules="loginrules" ref="loginref" label-width="100px">
+    <el-form
+      :model="loginForm"
+      :rules="loginrules"
+      ref="loginref"
+      label-width="100px"
+    >
       <el-form-item label="用户名" prop="username">
         <el-input v-model="loginForm.username"></el-input>
       </el-form-item>
