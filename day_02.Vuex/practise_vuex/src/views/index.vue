@@ -102,8 +102,6 @@ export default {
     // 旁行榜
     ranking() {
       this.$http.get("/users").then(res => {
-        window.console.log(res.data.data);
-
         this.rankinglist = res.data.data;
       });
     }

@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
-
+// 路由规则
 const routes = [
   {
     path: "/",
@@ -19,6 +19,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+// 路由导航守卫
 
 router.beforeEach(function(to, from, next) {
   if (to.path == "/login") {

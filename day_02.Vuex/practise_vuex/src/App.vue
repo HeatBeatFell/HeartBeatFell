@@ -4,22 +4,28 @@
       <template v-if="username">
         <router-link to="/">首页</router-link>|
         <span>您好： {{ username }} 您的积分为:{{ integral }}</span>
-        <button>退出</button>
+        <button @click="logout">退出</button>
       </template>
       <div id="nav" v-else>
         <router-link to="/">首页</router-link>|
         <router-link to="/login">登录</router-link>
       </div>
     </div>
-    <hr />
+    <hr/>
     <router-view />
   </div>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState} from "vuex";
 export default {
   computed: {
     ...mapState(["username", "integral"])
+  },
+  methods: {
+    logout() {
+      sessionStorage.clear();
+      this.$router.push("/lohin");
+    }
   }
 };
 </script>

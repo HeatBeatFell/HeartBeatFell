@@ -28,6 +28,7 @@ export default new Vuex.Store({
     login(context, data) {
       // 发起ajax请求
       axios.post("/access_token", data).then(res => {
+        window.console.log(data);
         // 判断有没有等陆成功
         if (res.data.ok === 1) {
           sessionStorage.setItem("token", res.data.data.token);
