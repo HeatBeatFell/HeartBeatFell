@@ -4,10 +4,10 @@
       <el-form-item label="商品名称" prop="name">
         <el-input v-model="shopform.name"></el-input>
       </el-form-item>
-      <el-form-item label="商品价格" prop="price">
+      <el-form-item label="商品价格" type="number" prop="price">
         <el-input v-model="shopform.price"></el-input>
       </el-form-item>
-      <el-form-item label="商品数量" prop="number">
+      <el-form-item label="商品数量" prop="number" type="number">
         <el-input v-model="shopform.number"></el-input>
       </el-form-item>
       <el-button type="primary" @click="addshop">加入购物车</el-button>
@@ -29,7 +29,6 @@
             size="small"
             v-model="slot.row.number"
             :step="1"
-            @change="ad"
             :min="1"
             :max="100"
             label="描述文字"
@@ -63,18 +62,22 @@ export default {
     return {
       shopform: {
         name: "",
-        price: "",
+        price: 0,
         number: "" || 1,
         ischk: false
       },
-      num: 0,
-      chlall: false,
+
       // 用来储存商品s
       goods: []
     };
   },
   created() {
-    this.goods = JSON.parse(localStorage.getItem("goods"));
+    this.goods =
+      localStorage.getItem("goods") == "null" ||
+      localStorage.getItem("goods") == null
+        ? []
+        : JSON.parse(localStorage.getItem("goods"));
+    console.log(localStorage.getItem("goods") == "null");
   },
   // 监听属性
   watch: {
@@ -83,30 +86,47 @@ export default {
       // 深度监听发
       deep: true,
       handler: function() {
-        // 初始化数据
-        let num = 0;
-        let chlall = true;
-        // 循环数组
-        this.goods.forEach(i => {
-          // 如果都为选中状态  就计算总价
-          if (i.ischk) {
-            num += i.number * i.price;
-          }
-          // 如果部为选中状态 就让全选按钮未选中
-          if (!i.ischk) {
-            chlall = false;
-          }
-        });
-        // 然后赋值
-        this.num = num;
-        this.chlall = chlall;
+        localStorage.setItem("goods", JSON.stringify(this.goods));
       }
+    }
+  },
+  // 计算属性
+  computed: {
+    //计算总价
+    num: function() {
+      let num = 0;
+      if (this.goods.length !== 0) {
+        for (var i = 0; i < this.goods.length; i++) {
+          num += this.goods[i].price * this.goods[i].number;
+        }
+      }
+
+      return num;
     },
+
+    // 选中状态
     chlall: {
-      handler: function() {
-        if (this.chlall) {
-          this.goods.forEach(i => {
-            i.ischk = true;
+      // 读取数据
+      get: function() {
+        if (this.goods !== []) {
+          // 循环本地商品详情数组
+          for (var i = 0; i < this.goods.length; i++) {
+            // 如果有一个为false 就让全选按钮为false
+            if (this.goods[i].ischk == false) {
+              return false;
+            }
+          }
+        }
+        // 如果没有就让他为选中状态
+        return true;
+      },
+      // 设置数据
+      set: function(newval) {
+        if (this.goods !== []) {
+          // 循环数组
+          this.goods.forEach(v => {
+            //  让每个复选框的值跟全选框的装态一致
+            v.ischk = newval;
           });
         }
       }
@@ -116,21 +136,12 @@ export default {
   methods: {
     // 点击添加新的商品到浏览器
     addshop() {
-      // 先从浏览器获取商品id
-      let localgoods = localStorage.getItem("goods");
-      // 判断一下有没有
-      if (localgoods === null) {
-        // 如果啥都没有就给他一个空数组
-        localgoods = [];
-        localgoods.push(this.shopform);
-      } else {
-        // 如果有的话就让他先转换成字符串
-        localgoods = JSON.parse(localgoods);
-        // 然后添加新的商品
-        localgoods.push(this.shopform);
-      }
-      localStorage.setItem("goods", JSON.stringify(localgoods));
-      this.goods = JSON.parse(localStorage.getItem("goods"));
+      this.goods.push({
+        name: this.shopform.name,
+        price: this.shopform.price,
+        number: this.shopform.number,
+        ischk: this.shopform.ischk
+      });
       // 清空商品对象
       this.shopform.name = this.shopform.price = this.shopform.number = "";
     },
@@ -138,13 +149,8 @@ export default {
     deleteshop(id) {
       // 现在本地数组里删除该数据
       this.goods.splice(id, 1);
-      // 在重新储存到浏览器中
-      localStorage.setItem("goods", JSON.stringify(this.goods));
     },
-    // 数量发生变化后重新储存数据
-    ad() {
-      localStorage.setItem("goods", JSON.stringify(this.goods));
-    },
+
     // 批量删除
     removeall() {
       for (var i = this.goods.length - 1; i >= 0; i--) {
@@ -152,9 +158,6 @@ export default {
         if (this.goods[i].ischk == true) {
           // 现在本地数组里删除该数据
           this.goods.splice(i, 1);
-          // 在重新储存到浏览器中
-          localStorage.setItem("goods", JSON.stringify(this.goods));
-          this.goods = JSON.parse(localStorage.getItem("goods"));
         }
       }
     }

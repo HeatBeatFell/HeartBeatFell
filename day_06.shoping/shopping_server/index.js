@@ -82,8 +82,6 @@ app.get('/api/v1/goods', (req, res) => {
         wh.push("?")
     });
     wh = wh.join(",")
-
-
     let sql = ` SELECT * FROM shop_goods WHERE id IN(${wh})`
     conn.query(sql,id, (error, data) => {
         if (error) {
