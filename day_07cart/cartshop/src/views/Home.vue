@@ -42,9 +42,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="slot">
-          <el-button type="danger" @click="deleteshop(slot.$index)"
-            >删除</el-button
-          >
+          <el-button type="danger" @click="deleteshop(slot.$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,12 +70,15 @@ export default {
     };
   },
   created() {
-    this.goods =
-      localStorage.getItem("goods") == "null" ||
-      localStorage.getItem("goods") == null
-        ? []
-        : JSON.parse(localStorage.getItem("goods"));
-    console.log(localStorage.getItem("goods") == "null");
+    // 在获取首屏数据的时候如过
+    let aa = localStorage.getItem("goods");
+    if (!aa) return;
+    this.goods = JSON.parse(aa);
+    // localStorage.getItem("goods") == "null" ||
+    // localStorage.getItem("goods") == null
+    //   ? []
+    //   : JSON.parse(localStorage.getItem("goods"));
+    // console.log(localStorage.getItem("goods") == "null");
   },
   // 监听属性
   watch: {
@@ -94,13 +95,19 @@ export default {
   computed: {
     //计算总价
     num: function() {
+      // 设置一个变量用来计数
       let num = 0;
+      // 判断本地数组里有没有数据  如果没有就不进行循环便利
       if (this.goods.length !== 0) {
+        // 如果有数据  就进行循环
         for (var i = 0; i < this.goods.length; i++) {
-          num += this.goods[i].price * this.goods[i].number;
+          if (this.goods[i].ischk) {
+            // 然后把他们的单价和数量相乘得到总价
+            num += this.goods[i].price * this.goods[i].number;
+          }
         }
       }
-
+      // 计算属性的函数一定要返回
       return num;
     },
 
